@@ -1,0 +1,17 @@
+[package]
+authors = ["Braedon Smith <braedon.smith@kswg.cap.gov>"]
+edition = "2024"
+name = "campfire-api"
+publish = false
+version = "0.1.0"
+
+[dependencies]
+anyhow = "1.0.100"
+axum = "0.8.8"
+dotenvy = "0.15.7"
+entity = { path = "../entity" }
+migration = { path = "../migration" }
+sea-orm = { version = "1.1.19", features = ["sqlx-postgres", "runtime-tokio-native-tls", "macros"] }
+tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread"] }
+tower = "0.5.2"
+tracing-subscriber = "0.3.22"

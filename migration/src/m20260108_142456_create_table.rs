@@ -1,0 +1,149 @@
+use sea_orm_migration::{prelude::*, schema::*};
+
+#[derive(DeriveMigrationName)]
+pub struct Migration;
+
+#[async_trait::async_trait]
+impl MigrationTrait for Migration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .create_table(
+                Table::create()
+                    .table(Attendee::Table)
+                    .if_not_exists()
+                    .col(integer(Attendee::CAPID).primary_key())
+                    .col(string(Attendee::Rank))
+                    .col(string(Attendee::LastName))
+                    .col(string(Attendee::FirstName))
+                    .col(string_null(Attendee::MiddleName))
+                    .col(string(Attendee::Unit))
+                    .col(string(Attendee::Gender))
+                    .col(date(Attendee::DateOfBirth))
+                    .col(integer(Attendee::AgeAtStart))
+                    .col(integer(Attendee::AgeAtEnd))
+                    .col(integer_null(Attendee::Height))
+                    .col(integer_null(Attendee::Weight))
+                    .col(string(Attendee::ShirtSize))
+                    .col(string(Attendee::MemberType))
+                    .col(date(Attendee::Expiration))
+                    .col(string(Attendee::MemberStatus))
+                    .col(string_null(Attendee::HomePhone))
+                    .col(string_null(Attendee::CellPhone))
+                    .col(string(Attendee::Email))
+                    .col(string(Attendee::Address1))
+                    .col(string(Attendee::Address2))
+                    .col(string(Attendee::City))
+                    .col(string(Attendee::State))
+                    .col(string(Attendee::ZipCode))
+                    .col(string(Attendee::RegistrationStatus))
+                    .col(boolean(Attendee::IsStaff))
+                    .col(integer(Attendee::RegistrationID))
+                    .col(string_null(Attendee::Comments))
+                    .col(string_null(Attendee::EmergencyContactName))
+                    .col(string_null(Attendee::EmergencyContactNumber))
+                    .col(string_null(Attendee::CadetParentPhonePrimary))
+                    .col(string_null(Attendee::CadetParentPhoneSecondary))
+                    .col(string_null(Attendee::CadetParentEmailPrimary))
+                    .col(string_null(Attendee::CadetParentEmailSecondary))
+                    .col(string(Attendee::UnitCommanderName))
+                    .col(string(Attendee::UnitCommanderEmail))
+                    .col(string(Attendee::WingCommanderName))
+                    .col(string(Attendee::WingCommanderEmail))
+                    .col(boolean(Attendee::IsPilot))
+                    .col(date_null(Attendee::DLExpiration))
+                    .col(date_null(Attendee::LastEncampment))
+                    .col(integer(Attendee::HighestORide))
+                    .col(date_null(Attendee::AircraftGroundHandling))
+                    .col(date_null(Attendee::WingRunner))
+                    .col(date_null(Attendee::ORMBasic))
+                    .col(date_null(Attendee::ORMIntermediate))
+                    .col(date_null(Attendee::CPPTExpiration))
+                    .col(date_null(Attendee::MonthlySafety))
+                    .col(date_null(Attendee::ICUT))
+                    .col(date_null(Attendee::IS100))
+                    .col(date_null(Attendee::IS700))
+                    .col(date_null(Attendee::CAPT116))
+                    .col(date_null(Attendee::CAPT117Part1))
+                    .col(date_null(Attendee::CAPT117Part2))
+                    .col(date_null(Attendee::CAPT117Part3))
+                    .col(date_null(Attendee::FirstAid))
+                    .col(integer_null(Attendee::InvoiceID))
+                    .col(integer_null(Attendee::PricesID))
+                    .col(string(Attendee::InvoiceStatus))
+                    .col(string_null(Attendee::RegisteredBy))
+                    .to_owned(),
+            )
+            .await
+    }
+
+    async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .drop_table(Table::drop().table(Attendee::Table).to_owned())
+            .await
+    }
+}
+
+#[derive(DeriveIden)]
+enum Attendee {
+    Table,
+    CAPID,
+    Rank,
+    LastName,
+    FirstName,
+    MiddleName,
+    Unit,
+    Gender,
+    DateOfBirth,
+    AgeAtStart,
+    AgeAtEnd,
+    Height,
+    Weight,
+    ShirtSize,
+    MemberType,
+    Expiration,
+    MemberStatus,
+    HomePhone,
+    CellPhone,
+    Email,
+    Address1,
+    Address2,
+    City,
+    State,
+    ZipCode,
+    RegistrationStatus,
+    IsStaff,
+    RegistrationID,
+    Comments,
+    EmergencyContactName,
+    EmergencyContactNumber,
+    CadetParentPhonePrimary,
+    CadetParentPhoneSecondary,
+    CadetParentEmailPrimary,
+    CadetParentEmailSecondary,
+    UnitCommanderName,
+    UnitCommanderEmail,
+    WingCommanderName,
+    WingCommanderEmail,
+    IsPilot,
+    DLExpiration,
+    LastEncampment,
+    HighestORide,
+    AircraftGroundHandling,
+    WingRunner,
+    ORMBasic,
+    ORMIntermediate,
+    CPPTExpiration,
+    MonthlySafety,
+    ICUT,
+    IS100,
+    IS700,
+    CAPT116,
+    CAPT117Part1,
+    CAPT117Part2,
+    CAPT117Part3,
+    FirstAid,
+    InvoiceID,
+    PricesID,
+    InvoiceStatus,
+    RegisteredBy
+}
