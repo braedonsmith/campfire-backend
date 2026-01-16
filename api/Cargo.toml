@@ -7,7 +7,9 @@ version = "0.1.0"
 
 [dependencies]
 anyhow = "1.0.100"
-axum = "0.8.8"
+axum = { version = "0.8.8", features = ["multipart"] }
+calamine = "0.32.0"
+chrono = "0.4.43"
 dotenvy = "0.15.7"
 entity = { path = "../entity" }
 migration = { path = "../migration" }

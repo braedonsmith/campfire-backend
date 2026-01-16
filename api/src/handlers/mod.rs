@@ -1,5 +1,6 @@
 use sea_orm::DatabaseConnection;
 
+pub(crate) mod attendees;
 pub(crate) mod root;
 
 pub(crate) struct AppState {

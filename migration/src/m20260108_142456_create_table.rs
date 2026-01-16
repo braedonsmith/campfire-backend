@@ -23,7 +23,7 @@ impl MigrationTrait for Migration {
                     .col(integer(Attendee::AgeAtEnd))
                     .col(integer_null(Attendee::Height))
                     .col(integer_null(Attendee::Weight))
-                    .col(string(Attendee::ShirtSize))
+                    .col(string_null(Attendee::ShirtSize))
                     .col(string(Attendee::MemberType))
                     .col(date(Attendee::Expiration))
                     .col(string(Attendee::MemberStatus))
@@ -69,7 +69,7 @@ impl MigrationTrait for Migration {
                     .col(date_null(Attendee::FirstAid))
                     .col(integer_null(Attendee::InvoiceID))
                     .col(integer_null(Attendee::PricesID))
-                    .col(string(Attendee::InvoiceStatus))
+                    .col(string_null(Attendee::InvoiceStatus))
                     .col(string_null(Attendee::RegisteredBy))
                     .to_owned(),
             )
