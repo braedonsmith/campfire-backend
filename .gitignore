@@ -94,3 +94,6 @@ http-client.private.env.json
 
 # Environment variable file
 .env
+
+# File uploads folder
+uploads

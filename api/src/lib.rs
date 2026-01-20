@@ -27,10 +27,17 @@ async fn start() -> anyhow::Result<()> {
 
     let db_url = dotenvy::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
     let bind_addr = dotenvy::var("BIND_ADDR").expect("BIND_ADDR is not set in .env file");
+    let uploads_path = dotenvy::var("UPLOADS_PATH").expect("UPLOADS_PATH is not set in .env file");
 
     let debug = match dotenvy::var("DEBUG").expect("DEBUG is not set in .env file").as_str() {
         "true" => true,
         _ => false
+    };
+
+    match tokio::fs::try_exists(uploads_path.clone()).await {
+        Ok(true) => {},
+        Ok(false) => panic!("Broken uploads folder symlink"),
+        _ => tokio::fs::create_dir(uploads_path).await.expect("Failed to create uploads folder")
     };
 
     let state = Arc::new(AppState {
@@ -54,9 +61,9 @@ async fn start() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/", get(root))
         .route("/attendees", get(get_all_attendees))
-        .route("/attendee/{id}", get(get_attendee_by_capid))
-        .route("/attendee/new", post(create_attendee))
-        .route("/attendee/new/bulk", post(create_attendee_bulk))
+        .route("/attendees/{id}", get(get_attendee_by_capid))
+        .route("/attendees/new", post(create_attendee))
+        .route("/attendees/new/bulk", post(create_attendee_bulk))
         .layer(cors)
         .with_state(state);
 
