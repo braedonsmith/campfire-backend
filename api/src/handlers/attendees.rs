@@ -9,8 +9,7 @@ use calamine::{DataType, HeaderRow, Reader, Xlsx, open_workbook};
 use chrono::NaiveDate;
 use entity::prelude::Attendee;
 use migration::OnConflict;
-use sea_orm::{ActiveValue::Set, DbConn, DbErr};
-use sea_orm::prelude::{EntityTrait};
+use sea_orm::{ActiveModelTrait, ActiveValue::Set, DbConn, DbErr, EntityTrait};
 
 use crate::AppState;
 
@@ -18,6 +17,14 @@ pub(crate) async fn get_all_attendees(State(state): State<Arc<AppState>>) -> imp
     let attendees = Attendee::find().all(&state.db).await.expect("Could not get attendees");
 
     Json(attendees)
+}
+
+pub(crate) async fn get_attendee_by_capid(State(state): State<Arc<AppState>>, Path(capid): Path<i32>) -> Result<Json<entity::attendee::Model>, StatusCode> {
+    match Attendee::find_by_id(capid).one(&state.db).await {
+        Ok(Some(model)) => Ok(Json(model)),
+        Ok(None) => Err(StatusCode::BAD_REQUEST),
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR)
+    }
 }
 
 pub(crate) async fn delete_attendee(State(state): State<Arc<AppState>>, Path(capid): Path<i32>) -> impl IntoResponse {
