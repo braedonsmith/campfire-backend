@@ -52,7 +52,7 @@ impl MigrationTrait for Migration {
                     .col(boolean(Attendee::IsPilot))
                     .col(date_null(Attendee::DLExpiration))
                     .col(date_null(Attendee::LastEncampment))
-                    .col(integer(Attendee::HighestORide))
+                    .col(integer_null(Attendee::HighestORide))
                     .col(date_null(Attendee::AircraftGroundHandling))
                     .col(date_null(Attendee::WingRunner))
                     .col(date_null(Attendee::ORMBasic))

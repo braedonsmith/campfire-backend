@@ -48,7 +48,7 @@ pub struct Model {
     pub is_pilot: bool,
     pub dl_expiration: Option<Date>,
     pub last_encampment: Option<Date>,
-    pub highest_o_ride: i32,
+    pub highest_o_ride: Option<i32>,
     pub aircraft_ground_handling: Option<Date>,
     pub wing_runner: Option<Date>,
     pub orm_basic: Option<Date>,
