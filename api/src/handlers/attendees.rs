@@ -20,14 +20,17 @@ pub(crate) async fn get_all_attendees(State(state): State<Arc<AppState>>) -> imp
     Json(attendees)
 }
 
-pub(crate) async fn get_attendee_by_capid(State(state): State<Arc<AppState>>, Path(capid): Path<i32>) -> impl IntoResponse {
-    let attendee = Attendee::find_by_id(capid)
-        .one(&state.db)
-        .await
-        .expect(format!("Could not find attendee for CAPID {capid}").as_str())
-        .unwrap_or_else(|| panic!("Could not find attendee for CAPID {capid}"));
+pub(crate) async fn delete_attendee(State(state): State<Arc<AppState>>, Path(capid): Path<i32>) -> impl IntoResponse {
+    let model = entity::attendee::ActiveModel {
+        capid: Set(capid),
+        ..Default::default()
+    };
 
-    Json(attendee)
+    match model.delete(&state.db).await {
+        Ok(_) => StatusCode::OK,
+        Err(DbErr::RecordNotFound(_)) => StatusCode::BAD_REQUEST,
+        _ => StatusCode::INTERNAL_SERVER_ERROR
+    }
 }
 
 pub(crate) async fn create_attendee(State(state): State<Arc<AppState>>, attendee: Json<entity::attendee::Model>) -> impl IntoResponse {

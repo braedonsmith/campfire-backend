@@ -61,7 +61,7 @@ async fn start() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/", get(root))
         .route("/attendees", get(get_all_attendees))
-        .route("/attendees/{id}", get(get_attendee_by_capid))
+        .route("/attendees/{id}", get(get_attendee_by_capid).delete(delete_attendee))
         .route("/attendees/new", post(create_attendee))
         .route("/attendees/new/bulk", post(create_attendee_bulk))
         .layer(cors)
