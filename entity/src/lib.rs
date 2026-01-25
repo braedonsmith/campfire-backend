@@ -5,3 +5,5 @@ pub mod prelude;
 pub mod attendee;
 pub mod headcount;
 pub mod headcount_entry;
+pub mod radio;
+pub mod radio_type;

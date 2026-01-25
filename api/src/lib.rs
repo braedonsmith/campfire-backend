@@ -12,6 +12,7 @@ use tower_http::cors::{Any, CorsLayer};
 use crate::handlers::AppState;
 use crate::handlers::attendees::*;
 use crate::handlers::headcount::*;
+use crate::handlers::radios::*;
 use crate::handlers::root::root;
 use crate::handlers::uploads::*;
 
@@ -93,6 +94,19 @@ async fn start() -> anyhow::Result<()> {
         .route("/headcounts/new", post(create_headcount))
         .route("/uploads", get(get_all_uploads))
         .route("/uploads/file", get(download_file))
+        .route(
+            "/radios",
+            get(get_all_radios)
+                .post(create_new_radio)
+                .delete(delete_radio),
+        )
+        .route(
+            "/radios/types",
+            get(get_all_radio_types)
+                .post(create_new_radio_type)
+                .delete(delete_radio_type),
+        )
+        .route("/radios/issue", post(issue_radio).delete(return_radio))
         .layer(cors)
         .with_state(state);
 

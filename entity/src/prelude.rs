@@ -3,3 +3,5 @@
 pub use super::attendee::Entity as Attendee;
 pub use super::headcount::Entity as Headcount;
 pub use super::headcount_entry::Entity as HeadcountEntry;
+pub use super::radio::Entity as Radio;
+pub use super::radio_type::Entity as RadioType;

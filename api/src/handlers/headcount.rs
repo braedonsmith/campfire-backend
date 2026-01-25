@@ -17,12 +17,12 @@ use serde::{Deserialize, Serialize};
 use crate::AppState;
 
 pub(crate) async fn get_all_headcounts(State(state): State<Arc<AppState>>) -> impl IntoResponse {
-    let attendees = Headcount::find()
+    let headcounts = Headcount::find()
         .all(&state.db)
         .await
         .expect("Could not get headcounts");
 
-    Json(attendees)
+    Json(headcounts)
 }
 
 #[derive(Serialize)]

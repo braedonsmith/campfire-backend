@@ -75,6 +75,8 @@ pub enum Relation {
     HeadcountEntry,
     #[sea_orm(has_many = "super::headcount::Entity")]
     Headcount,
+    #[sea_orm(has_many = "super::radio::Entity")]
+    IssuedRadios,
 }
 
 impl Related<super::headcount_entry::Entity> for Entity {
@@ -90,6 +92,12 @@ impl Related<super::headcount::Entity> for Entity {
 
     fn via() -> Option<RelationDef> {
         Some(super::headcount_entry::Relation::Attendee.def().rev())
+    }
+}
+
+impl Related<super::radio::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::IssuedRadios.def()
     }
 }
 
