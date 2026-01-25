@@ -13,6 +13,7 @@ use crate::handlers::AppState;
 use crate::handlers::attendees::*;
 use crate::handlers::headcount::*;
 use crate::handlers::root::root;
+use crate::handlers::uploads::*;
 
 mod handlers;
 
@@ -90,6 +91,8 @@ async fn start() -> anyhow::Result<()> {
             post(add_to_headcount).delete(remove_from_headcount),
         )
         .route("/headcounts/new", post(create_headcount))
+        .route("/uploads", get(get_all_uploads))
+        .route("/uploads/file", get(download_file))
         .layer(cors)
         .with_state(state);
 
