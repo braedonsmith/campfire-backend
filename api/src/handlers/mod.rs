@@ -6,5 +6,5 @@ pub(crate) mod root;
 
 pub(crate) struct AppState {
     pub(crate) db: DatabaseConnection,
-    pub(crate) version: String
+    pub(crate) version: String,
 }

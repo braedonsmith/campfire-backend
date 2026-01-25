@@ -18,7 +18,7 @@ pub enum Relation {
     #[sea_orm(has_many = "super::headcount_entry::Entity")]
     HeadcountEntry,
     #[sea_orm(has_many = "super::attendee::Entity")]
-    Attendee
+    Attendee,
 }
 
 impl Related<super::headcount_entry::Entity> for Entity {

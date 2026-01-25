@@ -30,23 +30,30 @@ async fn start() -> anyhow::Result<()> {
     let bind_addr = dotenvy::var("BIND_ADDR").expect("BIND_ADDR is not set in .env file");
     let uploads_path = dotenvy::var("UPLOADS_PATH").expect("UPLOADS_PATH is not set in .env file");
 
-    let debug = match dotenvy::var("DEBUG").expect("DEBUG is not set in .env file").as_str() {
+    let debug = match dotenvy::var("DEBUG")
+        .expect("DEBUG is not set in .env file")
+        .as_str()
+    {
         "true" => true,
-        _ => false
+        _ => false,
     };
 
     match tokio::fs::try_exists(uploads_path.clone()).await {
-        Ok(true) => {},
+        Ok(true) => {}
         Ok(false) => panic!("Broken uploads folder symlink"),
-        _ => tokio::fs::create_dir(uploads_path).await.expect("Failed to create uploads folder")
+        _ => tokio::fs::create_dir(uploads_path)
+            .await
+            .expect("Failed to create uploads folder"),
     };
 
     let state = Arc::new(AppState {
-        db: Database::connect(db_url).await.expect("Database connection failed"),
-        version: env!("CARGO_PKG_VERSION").to_string()
+        db: Database::connect(db_url)
+            .await
+            .expect("Database connection failed"),
+        version: env!("CARGO_PKG_VERSION").to_string(),
     });
 
-    Migrator::up(&state.db, None).await.unwrap();
+    Migrator::up(&state.db, None).await?;
 
     let cors = if debug {
         CorsLayer::new()
@@ -56,23 +63,37 @@ async fn start() -> anyhow::Result<()> {
         CorsLayer::new()
             .allow_credentials(true)
             .allow_methods([Method::GET, Method::POST, Method::DELETE])
-            .allow_origin(dotenvy::var("CORS_ORIGIN").expect("CORS_ORIGIN is not set in .env file").parse::<HeaderValue>().unwrap())
+            .allow_origin(
+                dotenvy::var("CORS_ORIGIN")
+                    .expect("CORS_ORIGIN is not set in .env file")
+                    .parse::<HeaderValue>()
+                    .unwrap(),
+            )
     };
 
     let app = Router::new()
         .route("/", get(root))
         .route("/attendees", get(get_all_attendees))
-        .route("/attendees/{id}", get(get_attendee_by_capid).delete(delete_attendee))
+        .route(
+            "/attendees/{id}",
+            get(get_attendee_by_capid).delete(delete_attendee),
+        )
         .route("/attendees/new", post(create_attendee))
         .route("/attendees/new/bulk", post(create_attendee_bulk))
         .route("/headcounts", get(get_all_headcounts))
-        .route("/headcounts/{id}", get(get_headcount_by_id).delete(delete_headcount))
-        .route("/headcounts/{id}/manage", post(add_to_headcount).delete(remove_from_headcount))
+        .route(
+            "/headcounts/{id}",
+            get(get_headcount_by_id).delete(delete_headcount),
+        )
+        .route(
+            "/headcounts/{id}/manage",
+            post(add_to_headcount).delete(remove_from_headcount),
+        )
         .route("/headcounts/new", post(create_headcount))
         .layer(cors)
         .with_state(state);
 
-    let listener = TcpListener::bind(bind_addr).await.unwrap();
+    let listener = TcpListener::bind(bind_addr).await?;
     axum::serve(listener, app).await?;
 
     Ok(())

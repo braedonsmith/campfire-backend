@@ -145,5 +145,5 @@ pub(crate) enum Attendee {
     InvoiceID,
     PricesID,
     InvoiceStatus,
-    RegisteredBy
+    RegisteredBy,
 }

@@ -33,37 +33,50 @@ impl MigrationTrait for Migration {
                         ForeignKey::create()
                             .name("fk-headcount-entry-headcount-id")
                             .from(HeadcountEntry::Table, HeadcountEntry::HeadcountId)
-                            .to(Headcount::Table, Headcount::Id)
+                            .to(Headcount::Table, Headcount::Id),
                     )
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk-headcount-entry-capid")
                             .from(HeadcountEntry::Table, HeadcountEntry::CAPID)
-                            .to(Attendee::Table, Attendee::CAPID)
+                            .to(Attendee::Table, Attendee::CAPID),
                     )
                     .to_owned(),
             )
             .await?;
 
         manager
-            .create_index(Index::create()
-                .name("idx-headcount-id-capid")
-                .table(HeadcountEntry::Table)
-                .col(HeadcountEntry::HeadcountId)
-                .col(HeadcountEntry::CAPID)
-                .unique()
-                .to_owned()
+            .create_index(
+                Index::create()
+                    .name("idx-headcount-id-capid")
+                    .table(HeadcountEntry::Table)
+                    .col(HeadcountEntry::HeadcountId)
+                    .col(HeadcountEntry::CAPID)
+                    .unique()
+                    .to_owned(),
             )
             .await
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager.drop_index(Index::drop().if_exists().name("idx-headcount-id-capid").to_owned()).await?;
+        manager
+            .drop_index(
+                Index::drop()
+                    .if_exists()
+                    .name("idx-headcount-id-capid")
+                    .to_owned(),
+            )
+            .await?;
 
         manager
-            .drop_table(Table::drop().if_exists().table(HeadcountEntry::Table).to_owned())
+            .drop_table(
+                Table::drop()
+                    .if_exists()
+                    .table(HeadcountEntry::Table)
+                    .to_owned(),
+            )
             .await?;
-        
+
         manager
             .drop_table(Table::drop().if_exists().table(Headcount::Table).to_owned())
             .await
@@ -84,5 +97,5 @@ enum HeadcountEntry {
     Table,
     Id,
     HeadcountId,
-    CAPID
+    CAPID,
 }
