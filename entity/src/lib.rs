@@ -3,3 +3,5 @@
 pub mod prelude;
 
 pub mod attendee;
+pub mod headcount;
+pub mod headcount_entry;

@@ -14,6 +14,7 @@ dotenvy = "0.15.7"
 entity = { path = "../entity" }
 migration = { path = "../migration" }
 sea-orm = { version = "1.1.19", features = ["sqlx-postgres", "runtime-tokio-native-tls", "macros"] }
+serde = "1.0.228"
 tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread"] }
 tower = "0.5.2"
 tower-http = { version = "0.6.8", features = ["cors"] }

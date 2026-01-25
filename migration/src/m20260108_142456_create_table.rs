@@ -84,7 +84,7 @@ impl MigrationTrait for Migration {
 }
 
 #[derive(DeriveIden)]
-enum Attendee {
+pub(crate) enum Attendee {
     Table,
     CAPID,
     Rank,

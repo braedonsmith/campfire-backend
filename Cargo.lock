@@ -522,6 +522,7 @@ dependencies = [
  "entity",
  "migration",
  "sea-orm",
+ "serde",
  "tokio",
  "tower",
  "tower-http",

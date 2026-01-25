@@ -70,6 +70,27 @@ pub struct Model {
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+pub enum Relation {
+    #[sea_orm(has_many = "super::headcount_entry::Entity")]
+    HeadcountEntry,
+    #[sea_orm(has_many = "super::headcount::Entity")]
+    Headcount
+}
+
+impl Related<super::headcount_entry::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::HeadcountEntry.def()
+    }
+}
+
+impl Related<super::headcount::Entity> for Entity {
+    fn to() -> RelationDef {
+        super::headcount_entry::Relation::Headcount.def()
+    }
+
+    fn via() -> Option<RelationDef> {
+        Some(super::headcount_entry::Relation::Attendee.def().rev())
+    }
+}
 
 impl ActiveModelBehavior for ActiveModel {}

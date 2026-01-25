@@ -11,6 +11,7 @@ use tower_http::cors::{Any, CorsLayer};
 
 use crate::handlers::AppState;
 use crate::handlers::attendees::*;
+use crate::handlers::headcount::*;
 use crate::handlers::root::root;
 
 mod handlers;
@@ -64,6 +65,10 @@ async fn start() -> anyhow::Result<()> {
         .route("/attendees/{id}", get(get_attendee_by_capid).delete(delete_attendee))
         .route("/attendees/new", post(create_attendee))
         .route("/attendees/new/bulk", post(create_attendee_bulk))
+        .route("/headcounts", get(get_all_headcounts))
+        .route("/headcounts/{id}", get(get_headcount_by_id).delete(delete_headcount))
+        .route("/headcounts/{id}/manage", post(add_to_headcount).delete(remove_from_headcount))
+        .route("/headcounts/new", post(create_headcount))
         .layer(cors)
         .with_state(state);
 

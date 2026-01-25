@@ -40,8 +40,8 @@ pub(crate) async fn delete_attendee(State(state): State<Arc<AppState>>, Path(cap
     }
 }
 
-pub(crate) async fn create_attendee(State(state): State<Arc<AppState>>, attendee: Json<entity::attendee::Model>) -> impl IntoResponse {
-    match create(&state.db, attendee.0).await {
+pub(crate) async fn create_attendee(State(state): State<Arc<AppState>>, Json(attendee): Json<entity::attendee::Model>) -> impl IntoResponse {
+    match create(&state.db, attendee).await {
         Ok(_) => StatusCode::OK,
         Err(_) => StatusCode::BAD_REQUEST
     }
