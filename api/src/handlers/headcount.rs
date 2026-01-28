@@ -6,7 +6,7 @@ use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use entity::headcount_entry;
 use entity::prelude::{Attendee, Headcount, HeadcountEntry};
-use sea_orm::prelude::DateTime;
+use sea_orm::EntityLoaderTrait;
 use sea_orm::{
     ActiveModelTrait,
     ActiveValue::{NotSet, Set},
@@ -25,43 +25,22 @@ pub(crate) async fn get_all_headcounts(State(state): State<Arc<AppState>>) -> im
     Json(headcounts)
 }
 
-#[derive(Serialize)]
-pub(crate) struct HeadcountWithAttendees {
-    id: i32,
-    name: String,
-    location: String,
-    created_at: DateTime,
-    attendees: Vec<entity::attendee::Model>,
-}
-
 pub(crate) async fn get_headcount_by_id(
     State(state): State<Arc<AppState>>,
     Path(capid): Path<i32>,
-) -> Result<Json<HeadcountWithAttendees>, StatusCode> {
-    let result = Headcount::find_by_id(capid)
-        .find_with_related(Attendee)
-        .all(&state.db)
+) -> Result<Json<entity::headcount::ModelEx>, StatusCode> {
+    let result = entity::headcount::Entity::load()
+        .filter_by_id(capid)
+        .with(Attendee)
+        .one(&state.db)
         .await;
 
     match result {
-        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
-        Ok(vec) => {
-            if vec.is_empty() {
-                return Err(StatusCode::BAD_REQUEST);
-            }
-
-            let (headcount, attendees) = &vec[0];
-
-            let model = HeadcountWithAttendees {
-                id: headcount.id,
-                name: headcount.name.clone(),
-                location: headcount.location.clone(),
-                created_at: headcount.created_at,
-                attendees: attendees.to_vec(),
-            };
-
-            Ok(Json(model))
-        }
+        Ok(opt) => match opt {
+            Some(model) => Ok(Json(model)),
+            None => Err(StatusCode::NOT_FOUND)
+        },
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR)
     }
 }
 

@@ -4,14 +4,16 @@ use std::sync::Arc;
 use axum::extract::{Query, State};
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Json};
-use entity::prelude::{Radio, RadioType};
+use entity::prelude::{Attendee, Radio, RadioType};
 use sea_orm::{ActiveModelTrait, ActiveValue::*, DbErr, EntityTrait};
 use serde::Deserialize;
 
 use crate::AppState;
 
 pub(crate) async fn get_all_radios(State(state): State<Arc<AppState>>) -> impl IntoResponse {
-    let radios = Radio::find()
+    let radios = entity::radio::Entity::load()
+        .with(Attendee)
+        .with(RadioType)
         .all(&state.db)
         .await
         .expect("Could not get radios");
