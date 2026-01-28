@@ -1,0 +1,317 @@
+use sea_orm_migration::{prelude::*, schema::*};
+
+use crate::m20260108_142456_create_table::Attendee;
+
+#[derive(DeriveMigrationName)]
+pub struct Migration;
+
+#[async_trait::async_trait]
+impl MigrationTrait for Migration {
+    async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .create_table(
+                Table::create()
+                    .table(VehicleType::Table)
+                    .if_not_exists()
+                    .col(pk_auto(VehicleType::Id))
+                    .col(string(VehicleType::Make))
+                    .col(string(VehicleType::Model))
+                    .col(integer(VehicleType::Capacity))
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_table(
+                Table::create()
+                    .table(Vehicle::Table)
+                    .if_not_exists()
+                    .col(ColumnDef::new(Vehicle::Id).integer().not_null().primary_key())
+                    .col(integer(Vehicle::TypeId))
+                    .col(integer(Vehicle::Year))
+                    .col(string(Vehicle::OwnedByUnit))
+                    .col(integer_null(Vehicle::IssuedTo))
+                    .col(boolean(Vehicle::InService))
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk-vehicle-vehicle-type")
+                            .from(Vehicle::Table, Vehicle::TypeId)
+                            .to(VehicleType::Table, VehicleType::Id),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk-vehicle-issued-to-capid")
+                            .from(Vehicle::Table, Vehicle::IssuedTo)
+                            .to(Attendee::Table, Attendee::CAPID),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_table(
+                Table::create()
+                    .table(VehicleInspection::Table)
+                    .if_not_exists()
+                    .col(pk_auto(VehicleInspection::Id))
+                    .col(date_time(VehicleInspection::StartedAt))
+                    .col(integer(VehicleInspection::VehicleId))
+                    .col(boolean_null(VehicleInspection::Windows))
+                    .col(string_null(VehicleInspection::WindowsRemarks))
+                    .col(boolean_null(VehicleInspection::Headlights))
+                    .col(string_null(VehicleInspection::HeadlightsRemarks))
+                    .col(boolean_null(VehicleInspection::TailLights))
+                    .col(string_null(VehicleInspection::TailLightsRemarks))
+                    .col(boolean_null(VehicleInspection::BrakeLights))
+                    .col(string_null(VehicleInspection::BrakeLightsRemarks))
+                    .col(boolean_null(VehicleInspection::TurnSignals))
+                    .col(string_null(VehicleInspection::TurnSignalsRemarks))
+                    .col(boolean_null(VehicleInspection::EmergencyLights))
+                    .col(string_null(VehicleInspection::EmergencyLightsRemarks))
+                    .col(boolean_null(VehicleInspection::LicensePlateLight))
+                    .col(string_null(VehicleInspection::LicensePlateLightRemarks))
+                    .col(boolean_null(VehicleInspection::BackupLight))
+                    .col(string_null(VehicleInspection::BackupLightRemarks))
+                    .col(boolean_null(VehicleInspection::BackupAlarm))
+                    .col(string_null(VehicleInspection::BackupAlarmRemarks))
+                    .col(boolean_null(VehicleInspection::WiperBlades))
+                    .col(string_null(VehicleInspection::WiperBladesRemarks))
+                    .col(boolean_null(VehicleInspection::Horn))
+                    .col(string_null(VehicleInspection::HornRemarks))
+                    .col(boolean_null(VehicleInspection::Seats))
+                    .col(string_null(VehicleInspection::SeatsRemarks))
+                    .col(boolean_null(VehicleInspection::Restraints))
+                    .col(string_null(VehicleInspection::RestraintsRemarks))
+                    .col(boolean_null(VehicleInspection::Mirrors))
+                    .col(string_null(VehicleInspection::MirrorsRemarks))
+                    .col(boolean_null(VehicleInspection::BeaconLight))
+                    .col(string_null(VehicleInspection::BeaconLightRemarks))
+                    .col(boolean_null(VehicleInspection::Wiring))
+                    .col(string_null(VehicleInspection::WiringRemarks))
+                    .col(boolean_null(VehicleInspection::Brakes))
+                    .col(string_null(VehicleInspection::BrakesRemarks))
+                    .col(boolean_null(VehicleInspection::Battery))
+                    .col(string_null(VehicleInspection::BatteryRemarks))
+                    .col(boolean_null(VehicleInspection::BrakeFluid))
+                    .col(string_null(VehicleInspection::BrakeFluidRemarks))
+                    .col(boolean_null(VehicleInspection::ExhaustSystem))
+                    .col(string_null(VehicleInspection::ExhaustSystemRemarks))
+                    .col(boolean_null(VehicleInspection::OilLevel))
+                    .col(string_null(VehicleInspection::OilLevelRemarks))
+                    .col(integer_null(VehicleInspection::OilLastChange))
+                    .col(boolean_null(VehicleInspection::Coolant))
+                    .col(string_null(VehicleInspection::CoolantRemarks))
+                    .col(boolean_null(VehicleInspection::BeltsHoses))
+                    .col(string_null(VehicleInspection::BeltsHosesRemarks))
+                    .col(boolean_null(VehicleInspection::Transmission))
+                    .col(string_null(VehicleInspection::TransmissionRemarks))
+                    .col(boolean_null(VehicleInspection::BatteryCables))
+                    .col(string_null(VehicleInspection::BatteryCablesRemarks))
+                    .col(boolean_null(VehicleInspection::AirFilter))
+                    .col(string_null(VehicleInspection::AirFilterRemarks))
+                    .col(boolean_null(VehicleInspection::Body))
+                    .col(string_null(VehicleInspection::BodyRemarks))
+                    .col(boolean_null(VehicleInspection::Paint))
+                    .col(string_null(VehicleInspection::PaintRemarks))
+                    .col(boolean_null(VehicleInspection::Bumpers))
+                    .col(string_null(VehicleInspection::BumpersRemarks))
+                    .col(boolean_null(VehicleInspection::TireTread))
+                    .col(string_null(VehicleInspection::TireTreadRemarks))
+                    .col(boolean_null(VehicleInspection::TireGaugePresent))
+                    .col(integer_null(VehicleInspection::FrontRecommendedPressure))
+                    .col(integer_null(VehicleInspection::RearRecommendedPressure))
+                    .col(integer_null(VehicleInspection::LeftFrontPressure))
+                    .col(integer_null(VehicleInspection::RightFrontPressure))
+                    .col(integer_null(VehicleInspection::LeftRearPressure))
+                    .col(integer_null(VehicleInspection::RightRearPressure))
+                    .col(boolean_null(VehicleInspection::LogbookPresent))
+                    .col(boolean_null(VehicleInspection::RegistrationPresent))
+                    .col(string_null(VehicleInspection::RegistrationPresentRemarks))
+                    .col(boolean_null(VehicleInspection::RegistrationCurrent))
+                    .col(string_null(VehicleInspection::RegistrationCurrentRemarks))
+                    .col(boolean_null(VehicleInspection::InsurancePresent))
+                    .col(string_null(VehicleInspection::InsurancePresentRemarks))
+                    .col(boolean_null(VehicleInspection::InsuranceCurrent))
+                    .col(string_null(VehicleInspection::InsuranceCurrentRemarks))
+                    .col(boolean_null(VehicleInspection::CAPF132Present))
+                    .col(string_null(VehicleInspection::CAPF132PresentRemarks))
+                    .col(boolean_null(VehicleInspection::CAPF132Current))
+                    .col(string_null(VehicleInspection::CAPF132CurrentRemarks))
+                    .col(boolean_null(VehicleInspection::CAPF132Signed))
+                    .col(string_null(VehicleInspection::CAPF132SignedRemarks))
+                    .col(boolean_null(VehicleInspection::FirstAidKitPresent))
+                    .col(string_null(VehicleInspection::FirstAidKitPresentRemarks))
+                    .col(boolean_null(VehicleInspection::ToolkitPresent))
+                    .col(string_null(VehicleInspection::ToolkitPresentRemarks))
+                    .col(boolean_null(VehicleInspection::ToolkitSecured))
+                    .col(string_null(VehicleInspection::ToolkitSecuredRemarks))
+                    .col(boolean_null(VehicleInspection::SurvivalKitPresent))
+                    .col(string_null(VehicleInspection::SurvivalKitPresentRemarks))
+                    .col(boolean_null(VehicleInspection::SurvivalKitCurrent))
+                    .col(boolean_null(VehicleInspection::IsMissionReady))
+                    .col(integer_null(VehicleInspection::InspectorCAPID))
+                    .col(date_time_null(VehicleInspection::SignedAt))
+                    .col(integer_null(VehicleInspection::ICCAPID))
+                    .col(date_time_null(VehicleInspection::ICSignedAt))
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk-vehicle-inspection-vehicle")
+                            .from(VehicleInspection::Table, VehicleInspection::VehicleId)
+                            .to(Vehicle::Table, Vehicle::Id),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk-vehicle-inspection-inspector-capid")
+                            .from(VehicleInspection::Table, VehicleInspection::InspectorCAPID)
+                            .to(Attendee::Table, Attendee::CAPID),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk-vehicle-inspection-ic-capid")
+                            .from(VehicleInspection::Table, VehicleInspection::ICCAPID)
+                            .to(Attendee::Table, Attendee::CAPID),
+                    )
+                    .to_owned()
+            )
+            .await
+    }
+
+    async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .drop_table(Table::drop().if_exists().table(VehicleInspection::Table).to_owned())
+            .await?;
+
+        manager
+            .drop_table(Table::drop().if_exists().table(Vehicle::Table).to_owned())
+            .await?;
+
+        manager
+            .drop_table(Table::drop().if_exists().table(VehicleType::Table).to_owned())
+            .await
+    }
+}
+
+#[derive(DeriveIden)]
+enum VehicleType {
+    Table,
+    Id,
+    Make,
+    Model,
+    Capacity,
+}
+
+#[derive(DeriveIden)]
+enum Vehicle {
+    Table,
+    Id,
+    TypeId,
+    Year,
+    OwnedByUnit,
+    IssuedTo,
+    InService,
+}
+
+#[derive(DeriveIden)]
+enum VehicleInspection {
+    Table,
+    Id,
+    StartedAt,
+    VehicleId,
+    Windows,
+    WindowsRemarks,
+    Headlights,
+    HeadlightsRemarks,
+    TailLights,
+    TailLightsRemarks,
+    BrakeLights,
+    BrakeLightsRemarks,
+    TurnSignals,
+    TurnSignalsRemarks,
+    EmergencyLights,
+    EmergencyLightsRemarks,
+    LicensePlateLight,
+    LicensePlateLightRemarks,
+    BackupLight,
+    BackupLightRemarks,
+    BackupAlarm,
+    BackupAlarmRemarks,
+    WiperBlades,
+    WiperBladesRemarks,
+    Horn,
+    HornRemarks,
+    Seats,
+    SeatsRemarks,
+    Restraints,
+    RestraintsRemarks,
+    Mirrors,
+    MirrorsRemarks,
+    BeaconLight,
+    BeaconLightRemarks,
+    Wiring,
+    WiringRemarks,
+    Brakes,
+    BrakesRemarks,
+    Battery,
+    BatteryRemarks,
+    BrakeFluid,
+    BrakeFluidRemarks,
+    ExhaustSystem,
+    ExhaustSystemRemarks,
+    OilLevel,
+    OilLevelRemarks,
+    OilLastChange,
+    Coolant,
+    CoolantRemarks,
+    BeltsHoses,
+    BeltsHosesRemarks,
+    Transmission,
+    TransmissionRemarks,
+    BatteryCables,
+    BatteryCablesRemarks,
+    AirFilter,
+    AirFilterRemarks,
+    Body,
+    BodyRemarks,
+    Paint,
+    PaintRemarks,
+    Bumpers,
+    BumpersRemarks,
+    TireTread,
+    TireTreadRemarks,
+    TireGaugePresent,
+    FrontRecommendedPressure,
+    RearRecommendedPressure,
+    LeftFrontPressure,
+    RightFrontPressure,
+    LeftRearPressure,
+    RightRearPressure,
+    LogbookPresent,
+    RegistrationPresent,
+    RegistrationPresentRemarks,
+    RegistrationCurrent,
+    RegistrationCurrentRemarks,
+    InsurancePresent,
+    InsurancePresentRemarks,
+    InsuranceCurrent,
+    InsuranceCurrentRemarks,
+    CAPF132Present,
+    CAPF132PresentRemarks,
+    CAPF132Current,
+    CAPF132CurrentRemarks,
+    CAPF132Signed,
+    CAPF132SignedRemarks,
+    FirstAidKitPresent,
+    FirstAidKitPresentRemarks,
+    ToolkitPresent,
+    ToolkitPresentRemarks,
+    ToolkitSecured,
+    ToolkitSecuredRemarks,
+    SurvivalKitPresent,
+    SurvivalKitPresentRemarks,
+    SurvivalKitCurrent,
+    IsMissionReady,
+    InspectorCAPID,
+    SignedAt,
+    ICCAPID,
+    ICSignedAt,
+}

@@ -74,6 +74,8 @@ pub struct Model {
     pub issued_radios: HasMany<super::radio::Entity>,
     #[sea_orm(has_many)]
     pub issued_vehicles: HasMany<super::vehicle::Entity>,
+    #[sea_orm(has_many)]
+    pub inspections_performed: HasMany<super::vehicle_inspection::Entity>,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

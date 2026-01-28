@@ -7,3 +7,6 @@ pub mod headcount;
 pub mod headcount_entry;
 pub mod radio;
 pub mod radio_type;
+pub mod vehicle;
+pub mod vehicle_inspection;
+pub mod vehicle_type;

@@ -15,6 +15,7 @@ use crate::handlers::headcount::*;
 use crate::handlers::radios::*;
 use crate::handlers::root::root;
 use crate::handlers::uploads::*;
+use crate::handlers::vehicles::*;
 
 mod handlers;
 
@@ -107,6 +108,23 @@ async fn start() -> anyhow::Result<()> {
                 .delete(delete_radio_type),
         )
         .route("/radios/issue", post(issue_radio).delete(return_radio))
+        .route(
+            "/vehicles",
+            get(get_all_vehicles)
+                .post(create_new_vehicle)
+                .delete(delete_vehicle),
+        )
+        .route(
+            "/vehicles/types",
+            get(get_all_vehicle_types)
+                .post(create_new_vehicle_type)
+                .delete(delete_vehicle_type),
+        )
+        .route("/vehicles/issue", post(issue_vehicle).delete(return_vehicle))
+        .route("/vehicles/inspect", get(get_all_inspections).post(start_inspection))
+        .route("/vehicles/inspect/{id}", get(get_inspection).post(update_inspection).delete(delete_inspection))
+        .route("/vehicles/inspect/{id}/sign", post(sign_inspection))
+        .route("/vehicles/inspect/{id}/ic", post(override_inspection))
         .layer(cors)
         .with_state(state);
 
