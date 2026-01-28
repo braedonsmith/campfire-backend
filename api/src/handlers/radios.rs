@@ -14,7 +14,7 @@ pub(crate) async fn get_all_radios(State(state): State<Arc<AppState>>) -> impl I
     let radios = Radio::find()
         .all(&state.db)
         .await
-        .expect("Could not get headcounts");
+        .expect("Could not get radios");
 
     Json(radios)
 }
