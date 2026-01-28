@@ -3,7 +3,7 @@ authors = ["Braedon Smith <braedon.smith@kswg.cap.gov>"]
 edition = "2024"
 name = "campfire-api"
 publish = false
-version = "0.1.5"
+version = "0.1.6"
 
 [dependencies]
 anyhow = "1.0.100"
