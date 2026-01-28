@@ -26,7 +26,12 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Vehicle::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(Vehicle::Id).integer().not_null().primary_key())
+                    .col(
+                        ColumnDef::new(Vehicle::Id)
+                            .integer()
+                            .not_null()
+                            .primary_key(),
+                    )
                     .col(integer(Vehicle::TypeId))
                     .col(integer(Vehicle::Year))
                     .col(string(Vehicle::OwnedByUnit))
@@ -171,14 +176,19 @@ impl MigrationTrait for Migration {
                             .from(VehicleInspection::Table, VehicleInspection::ICCAPID)
                             .to(Attendee::Table, Attendee::CAPID),
                     )
-                    .to_owned()
+                    .to_owned(),
             )
             .await
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().if_exists().table(VehicleInspection::Table).to_owned())
+            .drop_table(
+                Table::drop()
+                    .if_exists()
+                    .table(VehicleInspection::Table)
+                    .to_owned(),
+            )
             .await?;
 
         manager
@@ -186,7 +196,12 @@ impl MigrationTrait for Migration {
             .await?;
 
         manager
-            .drop_table(Table::drop().if_exists().table(VehicleType::Table).to_owned())
+            .drop_table(
+                Table::drop()
+                    .if_exists()
+                    .table(VehicleType::Table)
+                    .to_owned(),
+            )
             .await
     }
 }

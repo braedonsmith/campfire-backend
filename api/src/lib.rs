@@ -120,9 +120,20 @@ async fn start() -> anyhow::Result<()> {
                 .post(create_new_vehicle_type)
                 .delete(delete_vehicle_type),
         )
-        .route("/vehicles/issue", post(issue_vehicle).delete(return_vehicle))
-        .route("/vehicles/inspect", get(get_all_inspections).post(start_inspection))
-        .route("/vehicles/inspect/{id}", get(get_inspection).post(update_inspection).delete(delete_inspection))
+        .route(
+            "/vehicles/issue",
+            post(issue_vehicle).delete(return_vehicle),
+        )
+        .route(
+            "/vehicles/inspect",
+            get(get_all_inspections).post(start_inspection),
+        )
+        .route(
+            "/vehicles/inspect/{id}",
+            get(get_inspection)
+                .post(update_inspection)
+                .delete(delete_inspection),
+        )
         .route("/vehicles/inspect/{id}/sign", post(sign_inspection))
         .route("/vehicles/inspect/{id}/ic", post(override_inspection))
         .layer(cors)

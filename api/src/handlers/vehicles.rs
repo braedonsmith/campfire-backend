@@ -6,13 +6,20 @@ use axum::http::StatusCode;
 use axum::response::{IntoResponse, Json};
 use chrono::Local;
 use entity::prelude::{Attendee, Vehicle, VehicleInspection, VehicleType};
-use sea_orm::{ActiveModelTrait, ActiveValue::*, DbErr, EntityLoaderTrait, EntityTrait, IntoActiveModel};
-use serde::{Deserialize};
+use sea_orm::{
+    ActiveModelTrait, ActiveValue::*, DbErr, EntityLoaderTrait, EntityTrait, IntoActiveModel,
+};
+use serde::Deserialize;
 
 use crate::AppState;
 
 pub(crate) async fn get_all_vehicles(State(state): State<Arc<AppState>>) -> impl IntoResponse {
-    let vehicles: Vec<entity::vehicle::ModelEx> = Vehicle::load().with(VehicleType).with(Attendee).all(&state.db).await.unwrap();
+    let vehicles: Vec<entity::vehicle::ModelEx> = Vehicle::load()
+        .with(VehicleType)
+        .with(Attendee)
+        .all(&state.db)
+        .await
+        .unwrap();
 
     Json(vehicles)
 }
@@ -81,7 +88,7 @@ pub(crate) async fn create_new_vehicle_type(
         id: NotSet,
         make: Set(vehicle_type.make),
         model: Set(vehicle_type.model),
-        capacity: Set(vehicle_type.capacity)
+        capacity: Set(vehicle_type.capacity),
     };
 
     match active_model.insert(&state.db).await {
@@ -206,7 +213,10 @@ pub(crate) struct StartInspectionParameters {
     capid: i32,
 }
 
-pub(crate) async fn start_inspection(State(state): State<Arc<AppState>>, Json(data): Json<StartInspectionParameters>) -> impl IntoResponse {
+pub(crate) async fn start_inspection(
+    State(state): State<Arc<AppState>>,
+    Json(data): Json<StartInspectionParameters>,
+) -> impl IntoResponse {
     let active_model = entity::vehicle_inspection::ActiveModel {
         id: NotSet,
         started_at: Set(Local::now().naive_local()),
@@ -217,32 +227,43 @@ pub(crate) async fn start_inspection(State(state): State<Arc<AppState>>, Json(da
 
     match active_model.insert(&state.db).await {
         Ok(_) => StatusCode::OK,
-        Err(_) => StatusCode::INTERNAL_SERVER_ERROR
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
     }
 }
 
-pub(crate) async fn get_inspection(State(state): State<Arc<AppState>>, Path(id): Path<i32>) -> Result<Json<entity::vehicle_inspection::ModelEx>, StatusCode> {
+pub(crate) async fn get_inspection(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<i32>,
+) -> Result<Json<entity::vehicle_inspection::ModelEx>, StatusCode> {
     match entity::vehicle_inspection::Entity::load()
         .filter_by_id(id)
         .with(Vehicle)
         .with(Attendee)
         .one(&state.db)
-        .await {
-            Ok(model) => match model {
-                Some(v) => Ok(Json(v)),
-                None => return Err(StatusCode::NOT_FOUND)
-            },
-            Err(_) => return Err(StatusCode::INTERNAL_SERVER_ERROR)
-        }
+        .await
+    {
+        Ok(model) => match model {
+            Some(v) => Ok(Json(v)),
+            None => return Err(StatusCode::NOT_FOUND),
+        },
+        Err(_) => return Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
 }
 
-pub(crate) async fn update_inspection(State(state): State<Arc<AppState>>, Json(inspection): Json<entity::vehicle_inspection::Model>) -> impl IntoResponse {
-    let mut model = match entity::vehicle_inspection::Entity::load().filter_by_id(inspection.id).one(&state.db).await {
+pub(crate) async fn update_inspection(
+    State(state): State<Arc<AppState>>,
+    Json(inspection): Json<entity::vehicle_inspection::Model>,
+) -> impl IntoResponse {
+    let mut model = match entity::vehicle_inspection::Entity::load()
+        .filter_by_id(inspection.id)
+        .one(&state.db)
+        .await
+    {
         Ok(model) => match model {
             Some(v) => v.into_active_model(),
-            None => return StatusCode::BAD_REQUEST
+            None => return StatusCode::BAD_REQUEST,
         },
-        Err(_) => return StatusCode::INTERNAL_SERVER_ERROR
+        Err(_) => return StatusCode::INTERNAL_SERVER_ERROR,
     };
 
     model.windows = Set(inspection.windows);
@@ -343,22 +364,30 @@ pub(crate) async fn update_inspection(State(state): State<Arc<AppState>>, Json(i
     match model.update(&state.db).await {
         Ok(_) => StatusCode::OK,
         Err(DbErr::RecordNotUpdated) => StatusCode::BAD_REQUEST,
-        Err(_) => StatusCode::INTERNAL_SERVER_ERROR
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
     }
 }
 
 #[derive(Deserialize)]
 pub(crate) struct SignInspectionParameters {
-    capid: i32
+    capid: i32,
 }
 
-pub(crate) async fn sign_inspection(State(state): State<Arc<AppState>>, Path(id): Path<i32>, Json(data): Json<SignInspectionParameters>) -> impl IntoResponse {
-    let mut model = match entity::vehicle_inspection::Entity::load().filter_by_id(id).one(&state.db).await {
+pub(crate) async fn sign_inspection(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<i32>,
+    Json(data): Json<SignInspectionParameters>,
+) -> impl IntoResponse {
+    let mut model = match entity::vehicle_inspection::Entity::load()
+        .filter_by_id(id)
+        .one(&state.db)
+        .await
+    {
         Ok(model) => match model {
             Some(v) => v.into_active_model(),
-            None => return StatusCode::BAD_REQUEST
+            None => return StatusCode::BAD_REQUEST,
         },
-        Err(_) => return StatusCode::INTERNAL_SERVER_ERROR
+        Err(_) => return StatusCode::INTERNAL_SERVER_ERROR,
     };
 
     model.inspector_capid = Set(Some(data.capid));
@@ -367,17 +396,25 @@ pub(crate) async fn sign_inspection(State(state): State<Arc<AppState>>, Path(id)
     match model.update(&state.db).await {
         Ok(_) => StatusCode::OK,
         Err(DbErr::RecordNotUpdated) => StatusCode::BAD_REQUEST,
-        Err(_) => StatusCode::INTERNAL_SERVER_ERROR
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
     }
 }
 
-pub(crate) async fn override_inspection(State(state): State<Arc<AppState>>, Path(id): Path<i32>, Json(data): Json<SignInspectionParameters>) -> impl IntoResponse {
-    let mut model = match entity::vehicle_inspection::Entity::load().filter_by_id(id).one(&state.db).await {
+pub(crate) async fn override_inspection(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<i32>,
+    Json(data): Json<SignInspectionParameters>,
+) -> impl IntoResponse {
+    let mut model = match entity::vehicle_inspection::Entity::load()
+        .filter_by_id(id)
+        .one(&state.db)
+        .await
+    {
         Ok(model) => match model {
             Some(v) => v.into_active_model(),
-            None => return StatusCode::BAD_REQUEST
+            None => return StatusCode::BAD_REQUEST,
         },
-        Err(_) => return StatusCode::INTERNAL_SERVER_ERROR
+        Err(_) => return StatusCode::INTERNAL_SERVER_ERROR,
     };
 
     model.ic_capid = Set(Some(data.capid));
@@ -386,14 +423,20 @@ pub(crate) async fn override_inspection(State(state): State<Arc<AppState>>, Path
     match model.update(&state.db).await {
         Ok(_) => StatusCode::OK,
         Err(DbErr::RecordNotUpdated) => StatusCode::BAD_REQUEST,
-        Err(_) => StatusCode::INTERNAL_SERVER_ERROR
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
     }
 }
 
-pub(crate) async fn delete_inspection(State(state): State<Arc<AppState>>, Path(id): Path<i32>) -> impl IntoResponse {
-    match entity::vehicle_inspection::Entity::delete_by_id(id).exec(&state.db).await {
+pub(crate) async fn delete_inspection(
+    State(state): State<Arc<AppState>>,
+    Path(id): Path<i32>,
+) -> impl IntoResponse {
+    match entity::vehicle_inspection::Entity::delete_by_id(id)
+        .exec(&state.db)
+        .await
+    {
         Ok(_) => StatusCode::OK,
         Err(DbErr::RecordNotFound(_)) => StatusCode::NOT_FOUND,
-        Err(_) => StatusCode::INTERNAL_SERVER_ERROR
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
     }
 }

@@ -38,9 +38,9 @@ pub(crate) async fn get_headcount_by_id(
     match result {
         Ok(opt) => match opt {
             Some(model) => Ok(Json(model)),
-            None => Err(StatusCode::NOT_FOUND)
+            None => Err(StatusCode::NOT_FOUND),
         },
-        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR)
+        Err(_) => Err(StatusCode::INTERNAL_SERVER_ERROR),
     }
 }
 
