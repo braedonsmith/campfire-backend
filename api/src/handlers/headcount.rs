@@ -10,7 +10,7 @@ use sea_orm::prelude::DateTime;
 use sea_orm::{
     ActiveModelTrait,
     ActiveValue::{NotSet, Set},
-    ColumnTrait, DbErr, EntityTrait, QueryFilter,
+    ColumnTrait, DbErr, EntityTrait, ExprTrait, QueryFilter,
 };
 use serde::{Deserialize, Serialize};
 
